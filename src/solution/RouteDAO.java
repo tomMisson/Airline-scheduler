@@ -1,7 +1,18 @@
 package solution;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import baseclasses.DataLoadingException;
 import baseclasses.IRouteDAO;
@@ -13,6 +24,7 @@ import baseclasses.Route;
  */
 public class RouteDAO implements IRouteDAO {
 
+	
 	/**
 	 * Finds all flights that depart on the specified day of the week
 	 * @param dayOfWeek A three letter day of the week, e.g. "Tue"
@@ -86,8 +98,30 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public void loadRouteData(Path arg0) throws DataLoadingException {
-		// TODO Auto-generated method stub
-
+		try {
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = db.parse(arg0.toString());
+			Element routes = doc.getDocumentElement();
+			
+			NodeList routesList = routes.getChildNodes();
+			for(int i=0; i<routesList.getLength(); i++) 
+			{
+				Node route = routesList.item(i);
+				
+				NodeList routeList =route.getChildNodes();
+				for(int j=0; i<routesList.getLength(); j++) 
+				{
+					Node routeData = routesList.item(i);
+					
+					System.out.println(routeData.getNodeName().equals("text"));
+					
+				}
+			}
+		}
+		catch(ParserConfigurationException | SAXException | IOException e)
+		{
+			System.err.println("Error Parsing XML: "+e);
+		}
 	}
 
 	/**
