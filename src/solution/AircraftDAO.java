@@ -36,6 +36,7 @@ public class AircraftDAO implements IAircraftDAO {
 			
 			//read the file line by line
 			String line = "";
+			Manufacturer manuf;
 			
 			//skip the first line of the file - headers
 			reader.readLine();
@@ -47,7 +48,15 @@ public class AircraftDAO implements IAircraftDAO {
 				Aircraft temp = new Aircraft();
 				temp.setTailCode(fields[0]);
 				temp.setTypeCode(fields[1]);
-				temp.setManufacturer(Manufacturer.valueOf(fields[2].toUpperCase()));
+				
+				if((manuf =  Manufacturer.valueOf(fields[2].toUpperCase())) instanceof Manufacturer) 
+				{
+					temp.setManufacturer(manuf);
+				}
+				else
+				{
+					throw new DataLoadingException();
+				}
 				temp.setModel(fields[3]);
 				temp.setSeats(Integer.parseInt(fields[4]));
 				temp.setCabinCrewRequired(Integer.parseInt(fields[5]));
@@ -63,7 +72,7 @@ public class AircraftDAO implements IAircraftDAO {
 		}
 
 	}
-	
+
 	/**
 	 * Returns a list of all the loaded Aircraft with at least the specified number of seats
 	 * @param seats the number of seats required
@@ -109,7 +118,15 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public Aircraft findAircraftByTailCode(String tailCode) {
-		// TODO Auto-generated method stub
+		
+		
+		for(Aircraft a: aeroplanes)
+		{
+			if(a.getTailCode().equals(tailCode))
+			{
+				return a;
+			}
+		}
 		return null;
 	}
 
@@ -120,8 +137,16 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public List<Aircraft> findAircraftByType(String typeCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Aircraft> byType = new ArrayList<>();
+		
+		for(Aircraft a: aeroplanes)
+		{
+			if(a.getTypeCode().equals(typeCode))
+			{
+				byType.add(a);
+			}
+		}
+		return byType;
 	}
 
 	/**
@@ -130,7 +155,7 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public List<Aircraft> getAllAircraft() {
-		return null;
+		return aeroplanes;
 	}
 
 	/**
@@ -139,8 +164,7 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public int getNumberOfAircraft() {
-		// TODO Auto-generated method stub
-		return 0;
+		return aeroplanes.size();
 	}
 
 	/**
@@ -148,7 +172,8 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
+		aeroplanes.clear();
+		aeroplanes = new ArrayList<Aircraft>();
 
 	}
 

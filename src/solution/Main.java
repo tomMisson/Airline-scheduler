@@ -15,7 +15,7 @@ public class Main {
 		
 		try {
 			aircraft.loadAircraftData(Paths.get("./data/aircraft.csv"));
-			aircraft.findAircraftBySeats(30);
+			aircraft.loadAircraftData(Paths.get("./data/malformed_aircraft1.csv"));
 		}
 		catch (DataLoadingException dle) {
 			System.err.println("Error loading aircraft data");
