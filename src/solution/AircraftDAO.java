@@ -36,7 +36,6 @@ public class AircraftDAO implements IAircraftDAO {
 			
 			//read the file line by line
 			String line = "";
-			Manufacturer manuf;
 			
 			//skip the first line of the file - headers
 			reader.readLine();
@@ -46,23 +45,24 @@ public class AircraftDAO implements IAircraftDAO {
 				String[] fields = line.split(",");
 				
 				Aircraft temp = new Aircraft();
-				temp.setTailCode(fields[0]);
-				temp.setTypeCode(fields[1]);
 				
-				if((manuf =  Manufacturer.valueOf(fields[2].toUpperCase())) instanceof Manufacturer) 
+				
+				try
 				{
-					temp.setManufacturer(manuf);
+					temp.setTailCode(fields[0]);
+					temp.setTypeCode(fields[1]);
+					temp.setManufacturer(Manufacturer.valueOf(fields[2].toUpperCase()));
+					temp.setModel(fields[3]);
+					temp.setSeats(Integer.parseInt(fields[4]));
+					temp.setCabinCrewRequired(Integer.parseInt(fields[5]));
+					temp.setStartingPosition(fields[6]);
+					
+					aeroplanes.add(temp);
 				}
-				else
+				catch(Exception e)
 				{
 					throw new DataLoadingException();
 				}
-				temp.setModel(fields[3]);
-				temp.setSeats(Integer.parseInt(fields[4]));
-				temp.setCabinCrewRequired(Integer.parseInt(fields[5]));
-				temp.setStartingPosition(fields[6]);
-				
-				aeroplanes.add(temp);
 			}
 		}
 		
