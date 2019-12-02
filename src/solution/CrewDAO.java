@@ -1,18 +1,28 @@
 package solution;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import baseclasses.CabinCrew;
 import baseclasses.Crew;
 import baseclasses.DataLoadingException;
 import baseclasses.ICrewDAO;
 import baseclasses.Pilot;
+import baseclasses.Pilot.Rank;
 
 /**
  * The CrewDAO is responsible for loading data from JSON-based crew files 
  * It contains various methods to help the scheduler find the right pilots and cabin crew
  */
 public class CrewDAO implements ICrewDAO {
+	
+	List<Crew> crew = new ArrayList<Crew>();
 
 	/**
 	 * Loads the crew data from the specified file, adding them to the currently loaded crew
@@ -22,8 +32,43 @@ public class CrewDAO implements ICrewDAO {
 	 */
 	@Override
 	public void loadCrewData(Path p) throws DataLoadingException {
-		// TODO Auto-generated method stub
+		
+		Pilot temp = new Pilot();
+		CabinCrew tempCC = new CabinCrew();
+		
+		try {
+			BufferedReader br = Files.newBufferedReader(p);
+			String json=""; String line = "";
+			while((line = br.readLine()) != null) {json=json+line;}
+			
+			JSONObject root = new JSONObject(json);
+			
+			JSONArray pilots = new JSONArray();
+			pilots = root.getJSONArray("pilots");
+			
+			for(int i=0;i<pilots.length(); i++)
+			{
+				JSONObject pilot = pilots.getJSONObject(i);
+				
+				temp.setForename(pilot.get("forename").toString());
+				temp.setSurname(pilot.get("surname").toString());
+				temp.setRank(Rank.valueOf(pilot.get("rank").toString()));
+				temp.setHomeBase(pilot.get("homebase").toString());
+				
+	
+				for(int j=0; j<qualifiedAircaft.length(); j++)
+				{
+					System.out.println(qualifiedAircaft.get(j).toString());
+				}
+			}
+			
 
+			JSONArray cabinCrew = new JSONArray();
+			cabinCrew = root.getJSONArray("cabincrew");
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

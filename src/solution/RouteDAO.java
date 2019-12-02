@@ -1,7 +1,11 @@
 package solution;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -10,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -24,6 +27,7 @@ import baseclasses.Route;
  */
 public class RouteDAO implements IRouteDAO {
 
+	List<Route> routes = new ArrayList<Route>();
 	
 	/**
 	 * Finds all flights that depart on the specified day of the week
@@ -98,23 +102,61 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public void loadRouteData(Path arg0) throws DataLoadingException {
+		
+		Route temp = new Route();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+		
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = db.parse(arg0.toString());
-			Element routes = doc.getDocumentElement();
+			Element root = doc.getDocumentElement();
 			
-			NodeList routesList = routes.getChildNodes();
-			for(int i=0; i<routesList.getLength(); i++) 
+			NodeList routesList = root.getElementsByTagName("Route");
+			
+			for(int i=0; i<routesList.getLength(); i++)
 			{
-				Node route = routesList.item(i);
+				NodeList route = routesList.item(i).getChildNodes();
 				
-				NodeList routeList =route.getChildNodes();
-				for(int j=0; i<routesList.getLength(); j++) 
+				for(int j=0; j<route.getLength(); j++)
 				{
-					Node routeData = routesList.item(i);
+					try {
+						System.out.println(route.item(j).getTextContent());
+//						switch(route.item(j).getNodeName()) {
+//							case "FlightNumber":
+//								System.out.println(Integer.parseInt(route.item(j).getTextContent()));
+//						
+//							case "DayOfWeek":
+//								System.out.println(route.item(j).getTextContent());
+//								
+//							case "DepartureTime":
+//								System.out.println(LocalTime.parse(route.item(j).getTextContent(), formatter));
+//								
+//							case "DepartureAirportCode":
+//								System.out.println(route.item(j).getTextContent());
+//								
+//							case "DepartureAirport":
+//								System.out.println(route.item(j).getTextContent());
+//								
+//							case "ArrivalTime":
+//								System.out.println(LocalTime.parse(route.item(j).getTextContent()));
+//								
+//							case "ArrivalAirport":
+//								System.out.println(route.item(j).getTextContent());
+//						
+//							case "ArrivalAirportCode":
+//								System.out.println(route.item(j).getTextContent());
+//						
+//							case "Duration":
+//								System.out.println(java.time.Duration.parse(route.item(j).getTextContent()));
+//						}
+					}
+					catch(Exception e)
+					{
+						System.err.println(e);
+					}
 					
-					System.out.println(routeData.getNodeName().equals("text"));
-					
+					routes.add(temp);
+					temp = new Route();
 				}
 			}
 		}

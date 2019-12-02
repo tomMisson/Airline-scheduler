@@ -13,10 +13,12 @@ public class Main {
 	public static void main(String[] args) {	
 		IAircraftDAO aircraft = new AircraftDAO();
 		IRouteDAO routes = new RouteDAO();
+		ICrewDAO crew = new CrewDAO();
 		
 		try {
 			//aircraft.loadAircraftData(Paths.get("./data/aircraft.csv"));
-			routes.loadRouteData(Paths.get("./data/routes.xml"));
+			//routes.loadRouteData(Paths.get("./data/routes.xml"));
+			crew.loadCrewData(Paths.get("./data/crew.json"));
 		}
 		catch (DataLoadingException dle) {
 			System.err.println("Error loading aircraft data");
