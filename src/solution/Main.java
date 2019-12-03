@@ -16,8 +16,8 @@ public class Main {
 		ICrewDAO crew = new CrewDAO();
 		
 		try {
-			//aircraft.loadAircraftData(Paths.get("./data/aircraft.csv"));
-			//routes.loadRouteData(Paths.get("./data/routes.xml"));
+			aircraft.loadAircraftData(Paths.get("./data/aircraft.csv"));
+			routes.loadRouteData(Paths.get("./data/routes.xml"));
 			crew.loadCrewData(Paths.get("./data/crew.json"));
 		}
 		catch (DataLoadingException dle) {

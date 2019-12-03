@@ -1,4 +1,5 @@
 package solution;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,12 +18,15 @@ import baseclasses.Pilot;
 import baseclasses.Pilot.Rank;
 
 /**
- * The CrewDAO is responsible for loading data from JSON-based crew files 
- * It contains various methods to help the scheduler find the right pilots and cabin crew
+ * The CrewDAO is responsible for loading data from JSON-based crew files It
+ * contains various methods to help the scheduler find the right pilots and
+ * cabin crew
  */
 public class CrewDAO implements ICrewDAO {
-	
-	List<Crew> crew = new ArrayList<Crew>();
+
+	List<Crew> Crew = new ArrayList<>();
+	List<CabinCrew> CabinCrew = new ArrayList<>();
+	List<Pilot> Pilots = new ArrayList<>();
 
 	/**
 	 * Loads the crew data from the specified file, adding them to the currently loaded crew
@@ -43,146 +47,263 @@ public class CrewDAO implements ICrewDAO {
 			
 			JSONObject root = new JSONObject(json);
 			
-			JSONArray pilots = new JSONArray();
-			pilots = root.getJSONArray("pilots");
+			JSONArray pilots = root.getJSONArray("pilots");
+			JSONArray cabinCrew = root.getJSONArray("cabincrew");
 			
 			for(int i=0;i<pilots.length(); i++)
 			{
 				JSONObject pilot = pilots.getJSONObject(i);
 				
-				temp.setForename(pilot.get("forename").toString());
-				temp.setSurname(pilot.get("surname").toString());
-				temp.setRank(Rank.valueOf(pilot.get("rank").toString()));
-				temp.setHomeBase(pilot.get("homebase").toString());
-				
-	
-				for(int j=0; j<qualifiedAircaft.length(); j++)
+				try
 				{
-					System.out.println(qualifiedAircaft.get(j).toString());
+					temp.setForename(pilot.get("forename").toString());
+					temp.setSurname(pilot.get("surname").toString());
+					temp.setRank(Rank.valueOf(pilot.get("rank").toString().toUpperCase()));
+					temp.setHomeBase(pilot.get("homebase").toString());
+					
+					JSONArray pilotTypeRating = pilot.getJSONArray("typeRatings");
+					for(int j=0;j<pilotTypeRating.length(); j++)
+					{
+						temp.setQualifiedFor(pilotTypeRating.get(j).toString());
+					}
+			
+					Pilots.add(temp);
+					temp = new Pilot();
+				}
+				catch(Exception e)
+				{
+					throw new DataLoadingException();
 				}
 			}
 			
 
-			JSONArray cabinCrew = new JSONArray();
-			cabinCrew = root.getJSONArray("cabincrew");
+			for(int k=0;k<pilots.length(); k++)
+			{
+				JSONObject cabcrew = cabinCrew.getJSONObject(k);
+				JSONArray qualifiedFor = cabcrew.getJSONArray("typeRatings");
+				try
+				{
+					tempCC.setForename(cabcrew.get("forename").toString());
+					tempCC.setSurname(cabcrew.get("surname").toString());
+					tempCC.setHomeBase(cabcrew.get("homebase").toString());
+					
+					
+					for(int j=0;j<qualifiedFor.length(); j++)
+					{
+						tempCC.setQualifiedFor(qualifiedFor.get(j).toString());
+					}
+					
+					CabinCrew.add(tempCC);
+					tempCC = new CabinCrew();
+				}
+				catch(Exception e)
+				{
+					throw new DataLoadingException();
+				}
+			}
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			throw new DataLoadingException();
 		}
 	}
-	
+
 	/**
-	 * Returns a list of all the cabin crew based at the airport with the specified airport code
+	 * Returns a list of all the cabin crew based at the airport with the specified
+	 * airport code
+	 * 
 	 * @param airportCode the three-letter airport code of the airport to check for
-	 * @return a list of all the cabin crew based at the airport with the specified airport code
+	 * @return a list of all the cabin crew based at the airport with the specified
+	 *         airport code
 	 */
 	@Override
 	public List<CabinCrew> findCabinCrewByHomeBase(String airportCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CabinCrew> ccHome = new ArrayList<>();
+		
+		for(CabinCrew c : CabinCrew)
+		{
+			if(c.getHomeBase().equals(airportCode))
+			{
+				ccHome.add(c); 
+			}
+		}
+
+		return ccHome;
 	}
 
 	/**
-	 * Returns a list of all the cabin crew based at a specific airport AND qualified to fly a specific aircraft type
-	 * @param typeCode the type of plane to find cabin crew for
+	 * Returns a list of all the cabin crew based at a specific airport AND
+	 * qualified to fly a specific aircraft type
+	 * 
+	 * @param typeCode    the type of plane to find cabin crew for
 	 * @param airportCode the three-letter airport code of the airport to check for
-	 * @return a list of all the cabin crew based at a specific airport AND qualified to fly a specific aircraft type
+	 * @return a list of all the cabin crew based at a specific airport AND
+	 *         qualified to fly a specific aircraft type
 	 */
 	@Override
 	public List<CabinCrew> findCabinCrewByHomeBaseAndTypeRating(String typeCode, String airportCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CabinCrew> ccHomeAndType = new ArrayList<>();
+		
+		for(CabinCrew c : CabinCrew)
+		{
+			for(String type : c.getTypeRatings())
+			{
+				if(c.getHomeBase().equals(airportCode) && type.equals(typeCode))
+				{
+					ccHomeAndType.add(c); 
+				}
+			}
+		}
+
+		return ccHomeAndType;
 	}
 
 	/**
-	 * Returns a list of all the cabin crew currently loaded who are qualified to fly the specified type of plane
+	 * Returns a list of all the cabin crew currently loaded who are qualified to
+	 * fly the specified type of plane
+	 * 
 	 * @param typeCode the type of plane to find cabin crew for
-	 * @return a list of all the cabin crew currently loaded who are qualified to fly the specified type of plane
+	 * @return a list of all the cabin crew currently loaded who are qualified to
+	 *         fly the specified type of plane
 	 */
 	@Override
 	public List<CabinCrew> findCabinCrewByTypeRating(String typeCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CabinCrew> ccType = new ArrayList<>();
+		
+		for(CabinCrew c : CabinCrew)
+		{
+			for(String type : c.getTypeRatings())
+			{
+				if(type.equals(typeCode))
+				{
+					ccType.add(c); 
+				}
+			}
+		}
+		return ccType;
 	}
 
 	/**
-	 * Returns a list of all the pilots based at the airport with the specified airport code
+	 * Returns a list of all the pilots based at the airport with the specified
+	 * airport code
+	 * 
 	 * @param airportCode the three-letter airport code of the airport to check for
-	 * @return a list of all the pilots based at the airport with the specified airport code
+	 * @return a list of all the pilots based at the airport with the specified
+	 *         airport code
 	 */
 	@Override
 	public List<Pilot> findPilotsByHomeBase(String airportCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Pilot> byHome = new ArrayList<>();
+		
+		for(Pilot p : Pilots)
+		{
+			if(p.getHomeBase().equals(airportCode))
+			{
+				byHome.add(p); 
+			}
+		}
+		return byHome;
 	}
 
 	/**
-	 * Returns a list of all the pilots based at a specific airport AND qualified to fly a specific aircraft type
-	 * @param typeCode the type of plane to find pilots for
+	 * Returns a list of all the pilots based at a specific airport AND qualified to
+	 * fly a specific aircraft type
+	 * 
+	 * @param typeCode    the type of plane to find pilots for
 	 * @param airportCode the three-letter airport code of the airport to check for
-	 * @return a list of all the pilots based at a specific airport AND qualified to fly a specific aircraft type
+	 * @return a list of all the pilots based at a specific airport AND qualified to
+	 *         fly a specific aircraft type
 	 */
 	@Override
 	public List<Pilot> findPilotsByHomeBaseAndTypeRating(String typeCode, String airportCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Pilot> byHomeAndType = new ArrayList<>();
+		
+		for(Pilot p : Pilots)
+		{
+			for(String type : p.getTypeRatings())
+			{
+				if(p.getHomeBase().equals(airportCode) && type.equals(typeCode))
+				{
+					byHomeAndType.add(p); 
+				}
+			}
+		}
+
+		return byHomeAndType;
 	}
 
 	/**
-	 * Returns a list of all the pilots currently loaded who are qualified to fly the specified type of plane
+	 * Returns a list of all the pilots currently loaded who are qualified to fly
+	 * the specified type of plane
+	 * 
 	 * @param typeCode the type of plane to find pilots for
-	 * @return a list of all the pilots currently loaded who are qualified to fly the specified type of plane
+	 * @return a list of all the pilots currently loaded who are qualified to fly
+	 *         the specified type of plane
 	 */
 	@Override
 	public List<Pilot> findPilotsByTypeRating(String typeCode) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Pilot> byType = new ArrayList<>();
+		
+		for(Pilot p : Pilots)
+		{
+			for(String type: p.getTypeRatings())
+			{
+				if(type.equals(typeCode))
+				{
+					byType.add(p); 
+				}
+			}
+		}
+
+		return byType;
 	}
 
 	/**
 	 * Returns a list of all the cabin crew currently loaded
+	 * 
 	 * @return a list of all the cabin crew currently loaded
 	 */
 	@Override
 	public List<CabinCrew> getAllCabinCrew() {
-		// TODO Auto-generated method stub
-		return null;
+		return CabinCrew;
 	}
 
 	/**
 	 * Returns a list of all the crew, regardless of type
+	 * 
 	 * @return a list of all the crew, regardless of type
 	 */
 	@Override
 	public List<Crew> getAllCrew() {
-		// TODO Auto-generated method stub
-		return null;
+		Crew.addAll(Pilots);
+		Crew.addAll(CabinCrew);
+		return Crew;
 	}
 
 	/**
 	 * Returns a list of all the pilots currently loaded
+	 * 
 	 * @return a list of all the pilots currently loaded
 	 */
 	@Override
 	public List<Pilot> getAllPilots() {
-		// TODO Auto-generated method stub
-		return null;
+		return Pilots;
 	}
 
 	@Override
 	public int getNumberOfCabinCrew() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return CabinCrew.size();
 	}
 
 	/**
 	 * Returns the number of pilots currently loaded
+	 * 
 	 * @return the number of pilots currently loaded
 	 */
 	@Override
 	public int getNumberOfPilots() {
-		// TODO Auto-generated method stub
-		return 0;
+		return Pilots.size();
 	}
 
 	/**
@@ -190,8 +311,9 @@ public class CrewDAO implements ICrewDAO {
 	 */
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		Crew = new ArrayList<>();
+		CabinCrew = new ArrayList<>();
+		Pilots = new ArrayList<>();
 	}
 
 }

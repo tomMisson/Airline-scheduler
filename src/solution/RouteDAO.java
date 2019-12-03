@@ -1,7 +1,7 @@
 package solution;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -27,7 +28,7 @@ import baseclasses.Route;
  */
 public class RouteDAO implements IRouteDAO {
 
-	List<Route> routes = new ArrayList<Route>();
+	List<Route> Routes = new ArrayList<Route>();
 	
 	/**
 	 * Finds all flights that depart on the specified day of the week
@@ -36,8 +37,16 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public List<Route> findRoutesByDayOfWeek(String dayOfWeek) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Route> byDoW = new ArrayList<>();
+		
+		for(Route r: Routes)
+		{
+			if(r.getDayOfWeek().equals(dayOfWeek))
+			{
+				byDoW.add(r);
+			}
+		}
+		return byDoW;
 	}
 
 	/**
@@ -48,8 +57,16 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public List<Route> findRoutesByDepartureAirportAndDay(String airportCode, String dayOfWeek) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Route> byAirportAndDay = new ArrayList<>();
+		
+		for(Route r: Routes)
+		{
+			if(r.getDayOfWeek().equals(dayOfWeek) && r.getDepartureAirportCode().equals(airportCode))
+			{
+				byAirportAndDay.add(r);
+			}
+		}
+		return byAirportAndDay;
 	}
 
 	/**
@@ -59,8 +76,16 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public List<Route> findRoutesDepartingAirport(String airportCode) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Route> byAirport = new ArrayList<>();
+		
+		for(Route r: Routes)
+		{
+			if(r.getDepartureAirportCode().equals(airportCode))
+			{
+				byAirport.add(r);
+			}
+		}
+		return byAirport;
 	}
 
 	/**
@@ -70,8 +95,16 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public List<Route> findRoutesbyDate(LocalDate date) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Route> byDate = new ArrayList<>();
+		
+		for(Route r: Routes)
+		{
+			if(date.getDayOfWeek().equals(DayOfWeek.valueOf(r.getDayOfWeek())))
+			{
+				byDate.add(r);
+			}
+		}
+		return byDate;
 	}
 
 	/**
@@ -81,7 +114,7 @@ public class RouteDAO implements IRouteDAO {
 	@Override
 	public List<Route> getAllRoutes() {
 		// TODO Auto-generated method stub
-		return null;
+		return Routes;
 	}
 
 	/**
@@ -91,7 +124,7 @@ public class RouteDAO implements IRouteDAO {
 	@Override
 	public int getNumberOfRoutes() {
 		// TODO Auto-generated method stub
-		return 0;
+		return Routes.size();
 	}
 
 	/**
@@ -115,49 +148,43 @@ public class RouteDAO implements IRouteDAO {
 			
 			for(int i=0; i<routesList.getLength(); i++)
 			{
-				NodeList route = routesList.item(i).getChildNodes();
+				Node route = routesList.item(i);
 				
-				for(int j=0; j<route.getLength(); j++)
-				{
-					try {
-						System.out.println(route.item(j).getTextContent());
-//						switch(route.item(j).getNodeName()) {
-//							case "FlightNumber":
-//								System.out.println(Integer.parseInt(route.item(j).getTextContent()));
-//						
-//							case "DayOfWeek":
-//								System.out.println(route.item(j).getTextContent());
-//								
-//							case "DepartureTime":
-//								System.out.println(LocalTime.parse(route.item(j).getTextContent(), formatter));
-//								
-//							case "DepartureAirportCode":
-//								System.out.println(route.item(j).getTextContent());
-//								
-//							case "DepartureAirport":
-//								System.out.println(route.item(j).getTextContent());
-//								
-//							case "ArrivalTime":
-//								System.out.println(LocalTime.parse(route.item(j).getTextContent()));
-//								
-//							case "ArrivalAirport":
-//								System.out.println(route.item(j).getTextContent());
-//						
-//							case "ArrivalAirportCode":
-//								System.out.println(route.item(j).getTextContent());
-//						
-//							case "Duration":
-//								System.out.println(java.time.Duration.parse(route.item(j).getTextContent()));
-//						}
-					}
-					catch(Exception e)
+				try {
+				
+					if(route.getNodeType() == Node.ELEMENT_NODE)
 					{
-						System.err.println(e);
+						Element routeData = (Element) route;
+						
+					
+						temp.setFlightNumber(Integer.parseInt(routeData.getElementsByTagName("FlightNumber").item(0).getTextContent()));
+				
+						temp.setDayOfWeek(routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent());
+				
+						temp.setDepartureTime(LocalTime.parse(routeData.getElementsByTagName("DepartureTime").item(0).getTextContent(), formatter));
+						
+						temp.setDepartureAirportCode(routeData.getElementsByTagName("DepartureAirportCode").item(0).getTextContent());
+						
+						temp.setDepartureAirport(routeData.getElementsByTagName("DepartureAirport").item(0).getTextContent());
+					
+						temp.setArrivalTime(LocalTime.parse(routeData.getElementsByTagName("ArrivalTime").item(0).getTextContent()));
+				
+						temp.setArrivalAirport(routeData.getElementsByTagName("ArrivalAirport").item(0).getTextContent());
+						
+						temp.setArrivalAirportCode(routeData.getElementsByTagName("ArrivalAirportCode").item(0).getTextContent());
+							
+						temp.setDuration(java.time.Duration.parse(routeData.getElementsByTagName("Duration").item(0).getTextContent()));
+							
 					}
 					
-					routes.add(temp);
-					temp = new Route();
 				}
+				catch(Exception e)
+				{
+					throw new DataLoadingException();
+				}
+				Routes.add(temp);
+				temp = new Route();
+				
 			}
 		}
 		catch(ParserConfigurationException | SAXException | IOException e)
@@ -171,7 +198,7 @@ public class RouteDAO implements IRouteDAO {
 	 */
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
+		Routes = new ArrayList<Route>();
 
 	}
 
