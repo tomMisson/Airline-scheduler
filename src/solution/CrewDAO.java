@@ -40,70 +40,72 @@ public class CrewDAO implements ICrewDAO {
 		Pilot temp = new Pilot();
 		CabinCrew tempCC = new CabinCrew();
 		
+		String json="";
 		try {
 			BufferedReader br = Files.newBufferedReader(p);
-			String json=""; String line = "";
+			String line = "";
 			while((line = br.readLine()) != null) {json=json+line;}
 			
-			JSONObject root = new JSONObject(json);
-			
-			JSONArray pilots = root.getJSONArray("pilots");
-			JSONArray cabinCrew = root.getJSONArray("cabincrew");
-			
-			for(int i=0;i<pilots.length(); i++)
-			{
-				JSONObject pilot = pilots.getJSONObject(i);
-				
-				try
-				{
-					temp.setForename(pilot.get("forename").toString());
-					temp.setSurname(pilot.get("surname").toString());
-					temp.setRank(Rank.valueOf(pilot.get("rank").toString().toUpperCase()));
-					temp.setHomeBase(pilot.get("homebase").toString());
-					
-					JSONArray pilotTypeRating = pilot.getJSONArray("typeRatings");
-					for(int j=0;j<pilotTypeRating.length(); j++)
-					{
-						temp.setQualifiedFor(pilotTypeRating.get(j).toString());
-					}
-			
-					Pilots.add(temp);
-					temp = new Pilot();
-				}
-				catch(Exception e)
-				{
-					throw new DataLoadingException();
-				}
-			}
-			
-
-			for(int k=0;k<pilots.length(); k++)
-			{
-				JSONObject cabcrew = cabinCrew.getJSONObject(k);
-				JSONArray qualifiedFor = cabcrew.getJSONArray("typeRatings");
-				try
-				{
-					tempCC.setForename(cabcrew.get("forename").toString());
-					tempCC.setSurname(cabcrew.get("surname").toString());
-					tempCC.setHomeBase(cabcrew.get("homebase").toString());
-					
-					
-					for(int j=0;j<qualifiedFor.length(); j++)
-					{
-						tempCC.setQualifiedFor(qualifiedFor.get(j).toString());
-					}
-					
-					CabinCrew.add(tempCC);
-					tempCC = new CabinCrew();
-				}
-				catch(Exception e)
-				{
-					throw new DataLoadingException();
-				}
-			}
 		} 
 		catch (IOException e) {
 			throw new DataLoadingException();
+		}
+		
+		JSONObject root = new JSONObject(json);
+		
+		JSONArray pilots = root.getJSONArray("pilots");
+		JSONArray cabinCrew = root.getJSONArray("cabincrew");
+		
+		for(int i=0;i<pilots.length(); i++)
+		{
+			JSONObject pilot = pilots.getJSONObject(i);
+			
+			try
+			{
+				temp.setForename(pilot.get("forename").toString());
+				temp.setSurname(pilot.get("surname").toString());
+				temp.setRank(Rank.valueOf(pilot.get("rank").toString().toUpperCase()));
+				temp.setHomeBase(pilot.get("homebase").toString());
+				
+				JSONArray pilotTypeRating = pilot.getJSONArray("typeRatings");
+				for(int j=0;j<pilotTypeRating.length(); j++)
+				{
+					temp.setQualifiedFor(pilotTypeRating.get(j).toString());
+				}
+		
+				Pilots.add(temp);
+				temp = new Pilot();
+			}
+			catch(Exception e)
+			{
+				throw new DataLoadingException();
+			}
+		}
+		
+
+		for(int k=0;k<pilots.length(); k++)
+		{
+			JSONObject cabcrew = cabinCrew.getJSONObject(k);
+			JSONArray qualifiedFor = cabcrew.getJSONArray("typeRatings");
+			try
+			{
+				tempCC.setForename(cabcrew.get("forename").toString());
+				tempCC.setSurname(cabcrew.get("surname").toString());
+				tempCC.setHomeBase(cabcrew.get("homebase").toString());
+				
+				
+				for(int j=0;j<qualifiedFor.length(); j++)
+				{
+					tempCC.setQualifiedFor(qualifiedFor.get(j).toString());
+				}
+				
+				CabinCrew.add(tempCC);
+				tempCC = new CabinCrew();
+			}
+			catch(Exception e)
+			{
+				throw new DataLoadingException();
+			}
 		}
 	}
 

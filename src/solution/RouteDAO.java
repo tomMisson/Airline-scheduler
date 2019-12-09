@@ -91,7 +91,7 @@ public class RouteDAO implements IRouteDAO {
 	/**
 	 * Finds all of the flights that depart on the specified date
 	 * @param date the date to search for
-	 * @return A list of all routes that dpeart on this date
+	 * @return A list of all routes that depart on this date
 	 */
 	@Override
 	public List<Route> findRoutesbyDate(LocalDate date) {
@@ -99,9 +99,42 @@ public class RouteDAO implements IRouteDAO {
 		
 		for(Route r: Routes)
 		{
-			if(date.getDayOfWeek().equals(DayOfWeek.valueOf(r.getDayOfWeek())))
+			DayOfWeek day = null;
+			try
 			{
-				byDate.add(r);
+				switch (r.getDayOfWeek()) {
+					case "Mon":
+						day = DayOfWeek.MONDAY;
+						break;
+					case "Tue":
+						day = DayOfWeek.TUESDAY;
+						break;
+					case "Wed":
+						day = DayOfWeek.WEDNESDAY;
+						break;
+					case "Thu":
+						day = DayOfWeek.THURSDAY;
+						break;
+					case "Fri":
+						day = DayOfWeek.FRIDAY;
+						break;
+					case "Sat":
+						day = DayOfWeek.SATURDAY;
+						break;
+					case "Sun":
+						day = DayOfWeek.SUNDAY;
+						break;
+					default:
+						throw new DataLoadingException();
+				}
+				
+				if(day.equals(date.getDayOfWeek()))
+				{
+					byDate.add(r);
+				}
+			}
+			catch (Exception e){
+				e.printStackTrace();
 			}
 		}
 		return byDate;
@@ -190,6 +223,7 @@ public class RouteDAO implements IRouteDAO {
 		catch(ParserConfigurationException | SAXException | IOException e)
 		{
 			System.err.println("Error Parsing XML: "+e);
+			throw new DataLoadingException();
 		}
 	}
 
