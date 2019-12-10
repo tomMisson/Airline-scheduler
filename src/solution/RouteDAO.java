@@ -167,14 +167,14 @@ public class RouteDAO implements IRouteDAO {
 	 * @throws DataLoadingException if anything goes wrong. The exception's "cause" indicates the underlying exception
 	 */
 	@Override
-	public void loadRouteData(Path arg0) throws DataLoadingException {
+	public void loadRouteData(Path p) throws DataLoadingException {
 		
 		Route temp = new Route();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = db.parse(arg0.toString());
+			Document doc = db.parse(p.toString());
 			Element root = doc.getDocumentElement();
 			
 			NodeList routesList = root.getElementsByTagName("Route");

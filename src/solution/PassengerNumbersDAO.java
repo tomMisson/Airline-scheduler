@@ -2,12 +2,12 @@ package solution;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import baseclasses.DataLoadingException;
 import baseclasses.IPassengerNumbersDAO;
@@ -18,7 +18,7 @@ import baseclasses.IPassengerNumbersDAO;
  */
 public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 	
-	ArrayList<String> numbers = new ArrayList<>();
+	Map<String, Integer> numbers = new HashMap<>();
 
 	/**
 	 * Returns the number of passenger number entries in the cache
@@ -37,19 +37,9 @@ public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 	 */
 	@Override
 	public int getPassengerNumbersFor(int flightNumber, LocalDate date) {
-		for(String line: numbers)
-		{
-			String[] lineData = line.split(" ");
-			LocalDate dateData = LocalDate.parse(lineData[0]);
-			int flightNumberData = Integer.parseInt(lineData[1]);
-			int passengerData = Integer.parseInt(lineData[2]);
-			
-			if((flightNumberData == flightNumber)&& (dateData == date))
-			{
-				return passengerData;
-			}
-		}
-		return 0;
+		int result = -1;
+		if(numbers.containsKey(flightNumber+ " "+ date)){result = numbers.get(flightNumber+ " "+ date);}
+		return result;
 	}
 
 	/**
@@ -64,29 +54,25 @@ public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 
 		Connection c = null;
 		try {
-			c= DriverManager.getConnection("jdbc:sqlite:"+p);
+			
+			c= DriverManager.getConnection("jdbc:sqlite:"+p.toString());
 			
 			Statement sql = c.createStatement();
 			ResultSet rs = sql.executeQuery("SELECT * FROM PassengerNumbers;");
 			
 			while(rs.next())
 			{
-				try {
-					String temp = rs.getString("Date") +" "+ rs.getString("FlightNumber") + " " + rs.getString("Passengers");
-					System.out.println(temp);
-					numbers.add(temp);
-				}
-				catch(Exception e)
-				{
-					throw new DataLoadingException();
-				}
+				numbers.put(rs.getString("FlightNumber") + " " + rs.getString("Date"), Integer.parseInt(rs.getString("Passengers")));
 			}
+			
+			c.close();
+			rs.close();
+			sql.close();
 		}
-		catch(SQLException | DataLoadingException e)
+		catch(Exception e)
 		{
-			throw new DataLoadingException();
+			throw new DataLoadingException(e);
 		}
-
 	}
 
 	/**
@@ -95,7 +81,6 @@ public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 	@Override
 	public void reset() {
 		numbers.clear();
-
 	}
 
 }

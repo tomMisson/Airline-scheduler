@@ -21,8 +21,7 @@ public class Main {
 			aircraft.loadAircraftData(Paths.get("./data/aircraft.csv"));
 			routes.loadRouteData(Paths.get("./data/routes.xml"));
 			crew.loadCrewData(Paths.get("./data/crew.json"));
-			routes.findRoutesbyDate(LocalDate.parse("2019-12-31"));
-			//passengers.loadPassengerNumbersData(Paths.get("./data/mini_passengers.db"));
+			passengers.loadPassengerNumbersData(Paths.get("./data/passengernumbers.db"));
 		}
 		catch (DataLoadingException dle) {
 			System.err.println("Error loading aircraft data");
