@@ -147,7 +147,14 @@ public class RouteDAO implements IRouteDAO {
 	@Override
 	public List<Route> getAllRoutes() {
 		// TODO Auto-generated method stub
-		return Routes;
+		
+		List<Route> rs = new ArrayList();
+		
+		for(Route r: Routes)
+		{
+			rs.add(r);
+		}
+		return rs;
 	}
 
 	/**
@@ -192,7 +199,18 @@ public class RouteDAO implements IRouteDAO {
 					
 						temp.setFlightNumber(Integer.parseInt(routeData.getElementsByTagName("FlightNumber").item(0).getTextContent()));
 				
-						temp.setDayOfWeek(routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent());
+						if(routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Mon")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Tue")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Wed")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Thu")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Fri")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Sat")||
+								routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent().equals("Sun"))
+						{temp.setDayOfWeek(routeData.getElementsByTagName("DayOfWeek").item(0).getTextContent());}
+						else
+						{
+							throw new DataLoadingException();
+						}
 				
 						temp.setDepartureTime(LocalTime.parse(routeData.getElementsByTagName("DepartureTime").item(0).getTextContent(), formatter));
 						

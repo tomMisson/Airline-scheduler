@@ -37,8 +37,12 @@ public class CrewDAO implements ICrewDAO {
 	@Override
 	public void loadCrewData(Path p) throws DataLoadingException {
 		
+		Crew = new ArrayList<>();
+		CabinCrew = new ArrayList<>();
+		Pilots = new ArrayList<>();
+		
 		Pilot temp = new Pilot();
-		CabinCrew tempCC = new CabinCrew();
+		CabinCrew tempCC = new CabinCrew();  
 		
 		String json="";
 		try {
@@ -47,7 +51,7 @@ public class CrewDAO implements ICrewDAO {
 			while((line = br.readLine()) != null) {json=json+line;}
 			
 		} 
-		catch (IOException e) {
+		catch (Exception e) {
 			throw new DataLoadingException();
 		}
 		
@@ -67,11 +71,19 @@ public class CrewDAO implements ICrewDAO {
 				temp.setRank(Rank.valueOf(pilot.get("rank").toString().toUpperCase()));
 				temp.setHomeBase(pilot.get("homebase").toString());
 				
-				JSONArray pilotTypeRating = pilot.getJSONArray("typeRatings");
-				for(int j=0;j<pilotTypeRating.length(); j++)
+				if(pilot.getJSONArray("typeRatings") != null)
 				{
-					temp.setQualifiedFor(pilotTypeRating.get(j).toString());
+					JSONArray pilotTypeRating = pilot.getJSONArray("typeRatings");
+					for(int j=0;j<pilotTypeRating.length(); j++)
+					{
+						temp.setQualifiedFor(pilotTypeRating.get(j).toString());
+					}
 				}
+				else
+				{
+					
+				}
+				
 		
 				Pilots.add(temp);
 				temp = new Pilot();
@@ -83,7 +95,7 @@ public class CrewDAO implements ICrewDAO {
 		}
 		
 
-		for(int k=0;k<pilots.length(); k++)
+		for(int k=0;k<cabinCrew.length(); k++)
 		{
 			JSONObject cabcrew = cabinCrew.getJSONObject(k);
 			JSONArray qualifiedFor = cabcrew.getJSONArray("typeRatings");
@@ -267,7 +279,13 @@ public class CrewDAO implements ICrewDAO {
 	 */
 	@Override
 	public List<CabinCrew> getAllCabinCrew() {
-		return CabinCrew;
+		List<CabinCrew> cc = new ArrayList();
+		
+		for(CabinCrew c: CabinCrew)
+		{
+			cc.add(c);
+		}
+		return cc;
 	}
 
 	/**
@@ -277,10 +295,12 @@ public class CrewDAO implements ICrewDAO {
 	 */
 	@Override
 	public List<Crew> getAllCrew() {
-		Crew.addAll(Pilots);
 		Crew.addAll(CabinCrew);
+		Crew.addAll(Pilots);
+		
 		return Crew;
 	}
+	
 
 	/**
 	 * Returns a list of all the pilots currently loaded
@@ -289,7 +309,13 @@ public class CrewDAO implements ICrewDAO {
 	 */
 	@Override
 	public List<Pilot> getAllPilots() {
-		return Pilots;
+		List<Pilot> pilots = new ArrayList();
+		
+		for(Pilot p: Pilots)
+		{
+			pilots.add(p);
+		}
+		return pilots;
 	}
 
 	@Override

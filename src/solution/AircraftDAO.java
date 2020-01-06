@@ -66,7 +66,7 @@ public class AircraftDAO implements IAircraftDAO {
 			}
 		}
 		
-		catch (IOException ioe) {
+		catch (Exception ioe) {
 			//There was a problem reading the file
 			throw new DataLoadingException(ioe);
 		}
@@ -155,7 +155,13 @@ public class AircraftDAO implements IAircraftDAO {
 	 */
 	@Override
 	public List<Aircraft> getAllAircraft() {
-		return aeroplanes;
+	
+		List<Aircraft> planes = new ArrayList();
+		for(Aircraft a: aeroplanes)
+		{
+			planes.add(a);
+		}
+		return planes;
 	}
 
 	/**

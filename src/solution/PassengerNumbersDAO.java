@@ -18,7 +18,7 @@ import baseclasses.IPassengerNumbersDAO;
  */
 public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 	
-	Map<String, Integer> numbers = new HashMap<>();
+	Map<String, Integer> numbers = new HashMap<>(); 
 
 	/**
 	 * Returns the number of passenger number entries in the cache
@@ -38,7 +38,7 @@ public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 	@Override
 	public int getPassengerNumbersFor(int flightNumber, LocalDate date) {
 		int result = -1;
-		if(numbers.containsKey(flightNumber+ " "+ date)){result = numbers.get(flightNumber+ " "+ date);}
+		if(numbers.containsKey(flightNumber+""+ date.toString())){result = numbers.get(flightNumber+""+ date.toString());}
 		return result;
 	}
 
@@ -62,7 +62,7 @@ public class PassengerNumbersDAO implements IPassengerNumbersDAO {
 			
 			while(rs.next())
 			{
-				numbers.put(rs.getString("FlightNumber") + " " + rs.getString("Date"), Integer.parseInt(rs.getString("Passengers")));
+				numbers.put(rs.getString("FlightNumber")+ rs.getString("Date"), Integer.parseInt(rs.getString("Passengers")));
 			}
 			
 			c.close();
