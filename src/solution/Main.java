@@ -33,7 +33,7 @@ public class Main {
 			crew.loadCrewData(Paths.get("./data/crew.json"));
 			passengers.loadPassengerNumbersData(Paths.get("./data/passengernumbers.db"));
 			
-			s.generateSchedule(aircraft, crew, routes, passengers, LocalDate.parse("2020-07-01"), LocalDate.parse("2020-07-08"));
+			s.generateSchedule(aircraft, crew, routes, passengers, LocalDate.parse("2020-07-01"), LocalDate.parse("2020-08-31"));
 		}
 		catch (DataLoadingException dle) {
 			System.err.println("Error loading aircraft data");

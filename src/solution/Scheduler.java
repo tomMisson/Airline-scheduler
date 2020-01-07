@@ -42,7 +42,7 @@ public class Scheduler implements IScheduler {
 		int lastRemaining = 0;
 		Boolean needsReset = false;
 		
-		int maxPasses = 999999999; 
+		int maxPasses = 1000; 
 		
 		
 		while(!s.isCompleted()) {
@@ -54,7 +54,7 @@ public class Scheduler implements IScheduler {
 				passes = 0;
 			}
 			
-			if(passes>maxPasses) {
+			if(passes>=maxPasses) {
 				passes = 0;
 				needsReset = true;
 			}
@@ -68,32 +68,30 @@ public class Scheduler implements IScheduler {
 
 			for(FlightInfo flight : unallocatedFlights) {
 				Route r = flight.getFlight();
-							
-
-				try {
-					s.allocateAircraftTo(aircrafts.get(rand.nextInt(aircrafts.size())), flight);
-				} catch (DoubleBookedException e1) {
-			
-				}
-	
-				try {
-					s.allocateCabinCrewTo(crew.getAllCabinCrew().get(rand.nextInt(crew.getAllCabinCrew().size())), flight);
-				} catch (DoubleBookedException e1) {
-			
-				}
-				
+						
 				try {
 					s.allocateCaptainTo(crew.getAllPilots().get(rand.nextInt(crew.getAllPilots().size())), flight);
-				} catch (DoubleBookedException e1) {
-				
+					
 				}
-			
+				catch(Exception e)
+				{
+				}
+				try {
+					s.allocateCabinCrewTo(crew.getAllCabinCrew().get(rand.nextInt(crew.getAllCabinCrew().size())), flight);
+				}
+				catch(Exception e)
+				{
+				}
 				try {
 					s.allocateFirstOfficerTo(crew.getAllPilots().get(rand.nextInt(crew.getAllPilots().size())), flight);
-				} catch (DoubleBookedException e1) {
-				
 				}
-				
+				catch(Exception e)
+				{
+				}
+				try {
+					s.allocateAircraftTo(aircrafts.get(rand.nextInt(aircrafts.size())), flight);
+				} catch (Exception e) {
+				}
 				
 				try {
 					s.completeAllocationFor(flight);
